@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenFast | LSCM Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0d2035;
+  --teal:#0e3d52;
+  --teal2:#0a4a5e;
+  --orange:#f97316;
+  --orange2:#fb923c;
+  --orange-dark:#ea6c0a;
+  --white:#ffffff;
+  --off:#f4f7fa;
+  --light:#e8f0f5;
+  --grey:#6b7a90;
+  --dark-text:#1a2b3c;
+  --body-text:#4a5568;
+  --border:#d1dce8;
+  --shadow:0 4px 24px rgba(13,32,53,0.12);
+  --shadow-lg:0 12px 48px rgba(13,32,53,0.18);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;color:var(--dark-text);background:var(--white);overflow-x:hidden;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:#0d2035;}
+::-webkit-scrollbar-thumb{background:var(--orange);border-radius:3px;}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--navy);color:#afc5d6;font-size:0.72rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.topbar-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+.topbar-left{display:flex;gap:1.5rem;align-items:center;}
+.topbar-right{display:flex;gap:1rem;align-items:center;}
+.topbar-social a{color:#5a7a90;font-size:0.9rem;text-decoration:none;transition:color 0.2s;}
+.topbar-social a:hover{color:var(--orange);}
+
+/* ── HEADER ── */
+header{background:var(--teal);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.header-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;height:72px;gap:2rem;}
+.logo{display:flex;align-items:center;gap:0.5rem;text-decoration:none;}
+.logo-icon{width:42px;height:42px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:white;font-family:'Barlow Condensed',sans-serif;letter-spacing:-1px;clip-path:polygon(10% 0%,90% 0%,100% 50%,90% 100%,10% 100%,0% 50%);}
+.logo-text{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:800;color:white;text-transform:uppercase;letter-spacing:0.04em;line-height:1;}
+.logo-text span{color:var(--orange);}
+.logo-sub{font-size:0.55rem;color:rgba(255,255,255,0.4);display:block;letter-spacing:0.18em;text-transform:uppercase;margin-top:-2px;}
+
+nav{margin-left:auto;display:flex;align-items:center;gap:0.1rem;}
+nav a{font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.75);text-decoration:none;padding:8px 14px;border-radius:4px;transition:all 0.2s;text-transform:uppercase;letter-spacing:0.06em;}
+nav a:hover,nav a.active{color:white;background:rgba(249,115,22,0.2);}
+.btn-nav{background:var(--orange)!important;color:white!important;padding:8px 20px!important;font-weight:600!important;border-radius:4px;transition:background 0.2s!important;}
+.btn-nav:hover{background:var(--orange-dark)!important;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--teal2) 55%,#0f4a60 100%);min-height:540px;position:relative;overflow:hidden;display:flex;align-items:center;}
+.hero-pattern{position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(249,115,22,0.06) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(14,77,100,0.4) 0%,transparent 40%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;}
+.hero-circle{position:absolute;right:-100px;top:-100px;width:600px;height:600px;border-radius:50%;border:60px solid rgba(249,115,22,0.06);}
+.hero-circle2{position:absolute;right:100px;bottom:-200px;width:400px;height:400px;border-radius:50%;border:40px solid rgba(14,61,82,0.4);}
+
+/* decorative chevrons */
+.chevrons{position:absolute;right:3%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;opacity:0.4;}
+.chev{width:24px;height:10px;border-right:3px solid var(--orange);border-bottom:3px solid var(--orange);transform:rotate(-45deg);}
+
+.hero-inner{max-width:1280px;margin:0 auto;padding:3rem 2rem;position:relative;z-index:2;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
+.hero-content{}
+.hero-tag{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);color:var(--orange2);font-size:0.72rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:1.25rem;}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:4rem;font-weight:800;color:white;text-transform:uppercase;line-height:0.97;letter-spacing:0.02em;margin-bottom:1.25rem;}
+.hero h1 .hl{color:var(--orange);}
+.hero-desc{color:rgba(255,255,255,0.65);font-size:0.95rem;line-height:1.75;margin-bottom:2rem;font-weight:300;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-primary{background:var(--orange);color:white;font-size:0.85rem;font-weight:700;padding:13px 28px;border-radius:4px;text-decoration:none;text-transform:uppercase;letter-spacing:0.08em;border:none;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.5rem;}
+.btn-primary:hover{background:var(--orange-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(249,115,22,0.4);}
+.btn-outline{background:transparent;color:white;border:2px solid rgba(255,255,255,0.3);font-size:0.85rem;font-weight:600;padding:11px 26px;border-radius:4px;text-decoration:none;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--orange);color:var(--orange);}
+
+/* hero stats cards */
+.hero-cards{display:flex;flex-direction:column;gap:1rem;}
+.hero-stat-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-radius:10px;padding:1.1rem 1.4rem;display:flex;align-items:center;gap:1rem;transition:all 0.2s;}
+.hero-stat-card:hover{background:rgba(249,115,22,0.12);border-color:rgba(249,115,22,0.3);}
+.hero-stat-icon{width:44px;height:44px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.hero-stat-val{font-family:'Barlow Condensed',sans-serif;font-size:1.9rem;font-weight:800;color:white;line-height:1;}
+.hero-stat-lbl{font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+
+/* ── BRAND STRIP ── */
+.brand-strip{background:white;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.5rem 0;}
+.brand-strip-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-around;gap:2rem;flex-wrap:wrap;}
+.brand-pill{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;transition:color 0.2s;cursor:default;}
+.brand-pill:hover{color:var(--orange);}
+.brand-pill span{font-size:0.5rem;vertical-align:super;opacity:0.5;}
+
+/* ── STATS COUNTER BAND ── */
+.stats-band{background:var(--navy);padding:3rem 0;position:relative;overflow:hidden;}
+.stats-band::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--navy),var(--teal2) 50%,var(--navy));}
+.stats-band-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;position:relative;z-index:1;}
+.stat-item{text-align:center;position:relative;}
+.stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);height:50px;width:1px;background:rgba(255,255,255,0.08);}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:800;color:var(--orange);line-height:1;}
+.stat-label{font-size:0.78rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.14em;margin-top:6px;}
+.stat-sublabel{font-size:0.68rem;color:rgba(255,255,255,0.25);margin-top:3px;}
+
+/* ── PAGE SECTIONS ── */
+.page-section{display:none;}
+.page-section.active{display:block;animation:fadeUp 0.4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SECTION TABS ── */
+.sec-tabs{background:var(--off);border-bottom:2px solid var(--border);position:sticky;top:72px;z-index:900;}
+.sec-tabs-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:flex;gap:0;overflow-x:auto;}
+.sec-tab{font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--grey);padding:15px 22px;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.2s;}
+.sec-tab:hover{color:var(--orange);}
+.sec-tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+/* ── CONTENT WRAPPER ── */
+.cw{max-width:1280px;margin:0 auto;padding:0 2rem;}
+
+/* ── SECTION TITLE ── */
+.sec-title{padding:4rem 0 2.5rem;text-align:center;}
+.sec-eye{font-size:0.72rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--orange);margin-bottom:0.5rem;display:flex;align-items:center;justify-content:center;gap:0.75rem;}
+.sec-eye::before,.sec-eye::after{content:'';width:40px;height:2px;background:var(--orange);}
+.sec-title h2{font-family:'Barlow Condensed',sans-serif;font-size:2.8rem;font-weight:800;text-transform:uppercase;color:var(--navy);letter-spacing:0.03em;line-height:1.05;}
+.sec-title h2 span{color:var(--orange);}
+.sec-title p{color:var(--body-text);font-size:0.95rem;max-width:640px;margin:0.75rem auto 0;line-height:1.75;font-weight:300;}
+
+/* ── CARDS ── */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-bottom:3rem;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:3rem;}
+
+.card{background:white;border-radius:10px;box-shadow:var(--shadow);overflow:hidden;transition:all 0.25s;border:1px solid var(--border);}
+.card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);}
+.card-img{height:160px;object-fit:cover;width:100%;display:block;background:linear-gradient(135deg,var(--teal),var(--navy));display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
+.card-body{padding:1.5rem;}
+.card-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--orange);margin-bottom:0.5rem;}
+.card h3{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--navy);margin-bottom:0.6rem;}
+.card p{font-size:0.83rem;color:var(--body-text);line-height:1.65;}
+.card-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.card-num{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:rgba(249,115,22,0.1);line-height:1;}
+.read-more{font-size:0.75rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.1em;text-decoration:none;display:flex;align-items:center;gap:0.3rem;cursor:pointer;border:none;background:none;}
+.read-more::after{content:'→';}
+
+/* KPI CARD */
+.kpi-card{background:var(--navy);border-radius:10px;padding:1.5rem;text-align:center;position:relative;overflow:hidden;transition:all 0.2s;}
+.kpi-card::before{content:'';position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(249,115,22,0.08);}
+.kpi-card:hover{transform:translateY(-3px);}
+.kpi-icon{font-size:1.8rem;margin-bottom:0.6rem;display:block;}
+.kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:800;color:var(--orange);line-height:1;}
+.kpi-lbl{font-size:0.7rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.12em;margin-top:5px;}
+.kpi-sub{font-size:0.72rem;color:rgba(255,255,255,0.25);margin-top:4px;}
+
+/* ── TABLES ── */
+.table-wrap{overflow-x:auto;border-radius:10px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:2.5rem;}
+.table-hdr{background:var(--navy);color:white;padding:12px 20px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;border-left:4px solid var(--orange);border-radius:10px 10px 0 0;display:flex;align-items:center;gap:0.5rem;}
+table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+thead th{background:var(--teal2);color:rgba(255,255,255,0.85);font-weight:600;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;padding:11px 16px;text-align:left;white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:nth-child(even){background:var(--off);}
+tbody tr:hover{background:rgba(249,115,22,0.04);}
+tbody td{padding:10px 16px;color:var(--body-text);vertical-align:middle;line-height:1.5;}
+tbody td:first-child{color:var(--dark-text);font-weight:600;}
+.hl-row{background:rgba(249,115,22,0.07)!important;}
+.hl-row td{font-weight:700!important;color:var(--navy)!important;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:3px;}
+.b-red{background:var(--orange);color:white;}
+.b-dark{background:var(--navy);color:white;}
+.b-grey{background:var(--light);color:var(--grey);}
+.b-green{background:#065f46;color:white;}
+.b-copy{background:#064e3b;color:#6ee7b7;}
+.b-avoid{background:#7f1d1d;color:#fca5a5;}
+.b-partial{background:#78350f;color:#fcd34d;}
+.b-teal{background:var(--teal2);color:rgba(255,255,255,0.9);}
+
+/* ── DARK BAND ── */
+.dark-band{background:linear-gradient(135deg,var(--navy) 0%,var(--teal2) 100%);padding:4rem 0;position:relative;overflow:hidden;}
+.dark-band::before{content:'';position:absolute;top:-60px;left:-60px;width:280px;height:280px;border-radius:50%;border:50px solid rgba(249,115,22,0.06);}
+.dark-band::after{content:'';position:absolute;bottom:-80px;right:-80px;width:360px;height:360px;border-radius:50%;border:60px solid rgba(249,115,22,0.05);}
+.dark-band .cw{position:relative;z-index:1;}
+
+/* diagonal clip */
+.clip-top{clip-path:polygon(0 0,100% 5%,100% 100%,0 100%);margin-top:-3rem;padding-top:5rem;}
+.clip-bot{clip-path:polygon(0 0,100% 0,100% 95%,0 100%);padding-bottom:5rem;}
+
+/* ── ORANGE CALLOUT ── */
+.orange-box{background:var(--orange);border-radius:10px;padding:2rem 2.5rem;color:white;margin:2rem 0;position:relative;overflow:hidden;}
+.orange-box::after{content:'';position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.08);}
+.orange-box h3{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.5rem;}
+.orange-box p{font-size:0.88rem;opacity:0.9;font-weight:300;line-height:1.7;}
+
+/* ── INSIGHT BOX ── */
+.insight{border-left:4px solid var(--orange);background:var(--off);border-radius:0 8px 8px 0;padding:1rem 1.5rem;margin:0.75rem 0;}
+.insight-lbl{font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:0.3rem;}
+.insight-txt{font-size:0.85rem;color:var(--body-text);line-height:1.65;}
+
+/* ── BAR CHARTS ── */
+.bar-chart{display:flex;flex-direction:column;gap:0.65rem;}
+.bar-row{display:flex;align-items:center;gap:0.75rem;}
+.bar-lbl{width:120px;font-size:0.8rem;color:var(--body-text);text-align:right;flex-shrink:0;font-weight:500;}
+.bar-track{flex:1;height:20px;background:var(--light);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--orange);border-radius:3px;width:0;transition:width 1.4s cubic-bezier(.25,1,.5,1);}
+.bar-fill.alt{background:var(--navy);}
+.bar-fill.teal{background:var(--teal2);}
+.bar-fill.go{width:var(--tw);}
+.bar-pct{width:38px;font-weight:700;font-size:0.82rem;color:var(--dark-text);flex-shrink:0;}
+
+/* ── SPLIT BAR ── */
+.split-bar{height:32px;display:flex;gap:2px;border-radius:6px;overflow:hidden;margin:0.5rem 0;}
+.split-seg{display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:white;overflow:hidden;white-space:nowrap;letter-spacing:0.04em;}
+
+/* ── CHARTS ── */
+.chart-card{background:white;border-radius:12px;box-shadow:var(--shadow);padding:1.75rem;border:1px solid var(--border);}
+.chart-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--navy);margin-bottom:0.3rem;}
+.chart-sub{font-size:0.75rem;color:var(--grey);margin-bottom:1.25rem;}
+.chart-wrap{position:relative;height:240px;}
+.chart-wrap-lg{position:relative;height:300px;}
+
+/* ── FLOW DIAGRAM ── */
+.flow{display:flex;align-items:center;overflow-x:auto;padding:1.5rem 0;gap:0;}
+.flow-node{background:white;border:2px solid var(--border);border-radius:10px;padding:1rem 1.25rem;text-align:center;min-width:110px;flex-shrink:0;box-shadow:var(--shadow);transition:all 0.2s;}
+.flow-node:hover,.flow-node.active{border-color:var(--orange);transform:translateY(-3px);}
+.flow-node-ico{font-size:1.8rem;display:block;margin-bottom:0.4rem;}
+.flow-node-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--navy);}
+.flow-node-sub{font-size:0.62rem;color:var(--grey);margin-top:3px;}
+.flow-arr{display:flex;flex-direction:column;align-items:center;padding:0 8px;flex-shrink:0;}
+.flow-arr-line{font-size:1.4rem;color:var(--orange);font-weight:700;}
+.flow-arr-lbl{font-size:0.58rem;color:var(--grey);white-space:nowrap;text-align:center;}
+
+/* ── ROUTE CARDS ── */
+.route-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0;}
+.route-card{background:white;border:1px solid var(--border);border-radius:10px;padding:1.1rem;display:flex;gap:0.9rem;align-items:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:all 0.2s;}
+.route-card:hover{border-color:var(--orange);box-shadow:0 4px 20px rgba(249,115,22,0.12);}
+.route-ico{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;background:rgba(249,115,22,0.1);}
+.route-ico.dark{background:rgba(13,32,53,0.1);}
+.route-ico.red{background:rgba(220,38,38,0.1);}
+.rname{font-weight:700;font-size:0.88rem;color:var(--navy);}
+.rdetail{font-size:0.74rem;color:var(--grey);margin-top:2px;}
+.rcost{font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;color:var(--orange);font-weight:700;margin-top:4px;}
+.rcost.warn{color:#dc2626;}
+
+/* ── PROCUREMENT PILLAR ── */
+.pillar{background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow);transition:all 0.25s;}
+.pillar:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--orange);}
+.pillar-head{background:linear-gradient(135deg,var(--navy),var(--teal2));padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;}
+.pillar-num{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:rgba(249,115,22,0.3);line-height:1;}
+.pillar-ico{width:44px;height:44px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.pillar-ht{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:white;line-height:1.2;}
+.pillar-body{padding:1.25rem 1.5rem;}
+.pillar-brand{font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.3rem;}
+.pillar-text{font-size:0.82rem;color:var(--body-text);line-height:1.65;margin-bottom:0.75rem;}
+.pillar-why{font-size:0.78rem;color:var(--navy);font-weight:600;border-top:1px solid var(--border);padding-top:0.6rem;}
+
+/* ── SOURCES ── */
+.source-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border);}
+.source-item:last-child{border-bottom:none;}
+.src-num{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;color:var(--orange);min-width:32px;padding-top:1px;}
+.src-title{font-weight:600;font-size:0.88rem;color:var(--navy);}
+.src-org{font-size:0.76rem;color:var(--grey);margin-top:2px;}
+.src-link{font-size:0.7rem;color:var(--orange);margin-top:3px;word-break:break-all;}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);padding:3rem 0 1.5rem;}
+.footer-grid{max-width:1280px;margin:0 auto;padding:0 2rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:white;text-transform:uppercase;}
+.footer-logo span{color:var(--orange);}
+.footer-desc{font-size:0.8rem;color:rgba(255,255,255,0.35);margin-top:0.6rem;line-height:1.7;}
+.footer-h{font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;color:white;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:1rem;border-bottom:2px solid var(--orange);padding-bottom:0.4rem;}
+.footer-link{display:block;font-size:0.78rem;color:rgba(255,255,255,0.35);text-decoration:none;margin-bottom:0.4rem;transition:color 0.2s;cursor:pointer;}
+.footer-link:hover{color:var(--orange);}
+.footer-bottom{max-width:1280px;margin:0 auto;padding:1.5rem 2rem 0;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
+.footer-copy{font-size:0.75rem;color:rgba(255,255,255,0.25);}
+.footer-tags{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.ftag{font-size:0.65rem;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25);padding:3px 10px;border-radius:2px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.hero-inner{grid-template-columns:1fr;}.hero-cards{flex-direction:row;flex-wrap:wrap;}.grid-3,.grid-4{grid-template-columns:repeat(2,1fr);}.footer-grid{grid-template-columns:1fr 1fr;}.stats-band-inner{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.hero h1{font-size:2.8rem;}.grid-3,.grid-4,.grid-2,.route-grid{grid-template-columns:1fr;}.stats-band-inner{grid-template-columns:repeat(2,1fr);}.footer-grid{grid-template-columns:1fr;}.hero-inner{gap:1.5rem;}.nav-desktop{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <span>📦 LSCM Assignment · Group 9 · Final Submission</span>
+      <span>·</span>
+      <span>Procurement · Inventory · Transportation</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-social">
+        <a href="#">✉</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a class="logo" href="#" onclick="showSec('home');return false;">
+      <div class="logo-icon">GF</div>
+      <div>
+        <div class="logo-text">Gen<span>Fast</span></div>
+        <span class="logo-sub">Supply Chain Strategy</span>
+      </div>
+    </a>
+    <nav class="nav-desktop" id="main-nav">
+      <a href="#" class="active" onclick="showSec('home');return false;">Home</a>
+      <a href="#" onclick="showSec('procurement');return false;">Procurement</a>
+      <a href="#" onclick="showSec('inventory');return false;">Inventory</a>
+      <a href="#" onclick="showSec('transport');return false;">Transport</a>
+      <a href="#" onclick="showSec('sources');return false;">Sources</a>
+
+    </nav>
+  </div>
+</header>
+
+<!-- HERO (always visible) -->
+<div class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-circle"></div>
+  <div class="hero-circle2"></div>
+  <div class="chevrons"><div class="chev"></div><div class="chev"></div><div class="chev"></div></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-tag">LSCM Group 9 · Final Submission</div>
+      <h1>Welcome To <span class="hl">GenFast</span><br>Footwear<br>Strategy Hub</h1>
+      <p class="hero-desc">A complete Supply Chain & Logistics strategy benchmarked against Nike, PUMA, Skechers, New Balance, Bata & ASICS — covering Procurement, Inventory, and Transportation.</p>
+
+    </div>
+    <div class="hero-cards">
+      <div class="hero-stat-card">
+        <div class="hero-stat-icon">🤝</div>
+        <div><div class="hero-stat-val">8</div><div class="hero-stat-lbl">Procurement Pillars</div></div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hero-stat-icon">📦</div>
+        <div><div class="hero-stat-val">ABC</div><div class="hero-stat-lbl">Hybrid Inventory Model</div></div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hero-stat-icon">🚛</div>
+        <div><div class="hero-stat-val">4</div><div class="hero-stat-lbl">Transport Modes Mapped</div></div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hero-stat-icon">🌍</div>
+        <div><div class="hero-stat-val">6</div><div class="hero-stat-lbl">Benchmark Brands</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND STRIP -->
+<div class="brand-strip">
+  <div class="brand-strip-inner">
+    <div class="brand-pill">Nike<span>®</span></div>
+    <div class="brand-pill">PUMA<span>®</span></div>
+    <div class="brand-pill">Skechers<span>®</span></div>
+    <div class="brand-pill">New Balance<span>®</span></div>
+    <div class="brand-pill">Bata<span>®</span></div>
+    <div class="brand-pill">ASICS<span>®</span></div>
+  </div>
+</div>
+
+<!-- SECTION TABS -->
+<div class="sec-tabs">
+  <div class="sec-tabs-inner">
+    <button class="sec-tab active" id="tab-home" onclick="showSec('home')">🏠 Overview</button>
+    <button class="sec-tab" id="tab-procurement" onclick="showSec('procurement')">🤝 Procurement</button>
+    <button class="sec-tab" id="tab-inventory" onclick="showSec('inventory')">📦 Inventory</button>
+    <button class="sec-tab" id="tab-transport" onclick="showSec('transport')">🚛 Transportation</button>
+    <button class="sec-tab" id="tab-sources" onclick="showSec('sources')">📚 Sources</button>
+  </div>
+</div>
+
+
+<!-- ██████ HOME ██████ -->
+<div id="sec-home" class="page-section active">
+
+  <!-- STATS BAND -->
+  <div class="stats-band">
+    <div class="stats-band-inner">
+      <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Benchmark Brands</div><div class="stat-sublabel">Analysed</div></div>
+      <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Strategy Modules</div><div class="stat-sublabel">Procurement · Inventory · Transport</div></div>
+      <div class="stat-item"><div class="stat-num">95%</div><div class="stat-label">Local Sourcing Target</div><div class="stat-sublabel">Bata Model</div></div>
+      <div class="stat-item"><div class="stat-num">&lt;120</div><div class="stat-label">Days Inventory Outstanding</div><div class="stat-sublabel">GenFast KPI Target</div></div>
+    </div>
+  </div>
+
+  <div class="cw">
+    <div class="sec-title">
+      <div class="sec-eye">Three Core Modules</div>
+      <h2>GenFast <span>LSCM</span> Framework</h2>
+      <p>A complete supply chain strategy built on three interconnected pillars, each benchmarked against global footwear leaders and adapted for India's startup context.</p>
+    </div>
+
+    <!-- 3 MODULE CARDS -->
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-img">🤝</div>
+        <div class="card-body">
+          <div class="card-tag">Module 01</div>
+          <h3>Procurement Strategy</h3>
+          <p>Nike-inspired 3-tier supplier segmentation, multi-country diversified sourcing, ESG standards, digital supplier visibility and cost-efficient contract manufacturing partnerships.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">01</div>
+          <button class="read-more" onclick="showSec('procurement')">Explore</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img">📦</div>
+        <div class="card-body">
+          <div class="card-tag">Module 02</div>
+          <h3>Inventory Strategy</h3>
+          <p>Forecast-driven ABC hybrid model with multi-horizon demand forecasting, seasonal planning framework, and safety stock rules calibrated by margin and demand variability.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">02</div>
+          <button class="read-more" onclick="showSec('inventory')">Explore</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img">🚛</div>
+        <div class="card-body">
+          <div class="card-tag">Module 03</div>
+          <h3>Transportation Strategy</h3>
+          <p>Sea-first international inbound, domestic rail for long-haul, hub-and-spoke outbound with milk-run delivery, 3PL partnerships and a strict air freight cap policy.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">03</div>
+          <button class="read-more" onclick="showSec('transport')">Explore</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Transport Modal Split — Inbound vs Outbound</div>
+        <div class="chart-sub">GenFast recommended allocation across all transport modes</div>
+        <div class="chart-wrap"><canvas id="chart-modal"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Brand Inbound Sea Freight Share</div>
+        <div class="chart-sub">% of inbound volume by sea — benchmark vs GenFast target</div>
+        <div class="chart-wrap"><canvas id="chart-brands-sea"></canvas></div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="sec-title" style="padding-top:1rem;">
+      <div class="sec-eye">Performance Targets</div>
+      <h2>GenFast <span>KPI</span> Dashboard</h2>
+    </div>
+    <div class="grid-4">
+      <div class="kpi-card"><span class="kpi-icon">🔄</span><div class="kpi-val">&gt;3.0×</div><div class="kpi-lbl">Inventory Turnover</div><div class="kpi-sub">Between Nike & ASICS</div></div>
+      <div class="kpi-card"><span class="kpi-icon">📅</span><div class="kpi-val">&lt;120</div><div class="kpi-lbl">Days Inventory Outstanding</div><div class="kpi-sub">Far below Skechers 200+</div></div>
+      <div class="kpi-card"><span class="kpi-icon">🎯</span><div class="kpi-val">&lt;15%</div><div class="kpi-lbl">Forecast Error Rate</div><div class="kpi-sub">ASICS-level accuracy</div></div>
+      <div class="kpi-card"><span class="kpi-icon">📦</span><div class="kpi-val">&lt;5%</div><div class="kpi-lbl">A-SKU Stockout Rate</div><div class="kpi-sub">Nike service-level logic</div></div>
+      <div class="kpi-card"><span class="kpi-icon">🏭</span><div class="kpi-val">95%</div><div class="kpi-lbl">Local Raw Material Sourcing</div><div class="kpi-sub">Bata India model</div></div>
+      <div class="kpi-card"><span class="kpi-icon">✈️</span><div class="kpi-val">≤5%</div><div class="kpi-lbl">Air Freight Cap</div><div class="kpi-sub">PUMA-inspired strict limit</div></div>
+      <div class="kpi-card"><span class="kpi-icon">🚂</span><div class="kpi-val">₹1.96</div><div class="kpi-lbl">Rail Cost / Tonne-km</div><div class="kpi-sub">DPIIT/NCAER benchmark</div></div>
+      <div class="kpi-card"><span class="kpi-icon">💰</span><div class="kpi-val">12–15%</div><div class="kpi-lbl">Max Logistics Cost of FOB</div><div class="kpi-sub">Industry ceiling</div></div>
+    </div>
+  </div>
+
+  <!-- BRAND DARK BAND -->
+  <div class="dark-band clip-top clip-bot">
+    <div class="cw">
+      <div class="sec-title" style="padding-top:0;">
+        <div class="sec-eye" style="color:var(--orange2);">Benchmark Intelligence</div>
+        <h2 style="color:white;">What We Learned From Each <span>Brand</span></h2>
+      </div>
+      <div class="grid-3">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.5rem;border-top:3px solid var(--orange);transition:all 0.2s;" onmouseover="this.style.background='rgba(249,115,22,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:0.6rem;">Nike</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.7;">AI-driven demand forecasting. Sole Train rail initiative. Belgium inland waterway (14,000 truck trips replaced). Decentralized regional DCs.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.5rem;border-top:3px solid var(--orange);transition:all 0.2s;" onmouseover="this.style.background='rgba(249,115,22,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:0.6rem;">PUMA</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.7;">Strictest air freight policy (&lt;0.5%). Long-term ocean contracts. Electric trucks on select routes. Digital Zero-100 supply chain initiative.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.5rem;border-top:3px solid var(--orange);transition:all 0.2s;" onmouseover="this.style.background='rgba(249,115,22,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:0.6rem;">Skechers</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.7;">Mumbai DC near JNPT. CJ Logistics 3PL partnership. Contract manufacturing in Asia. US$2,379 FCL benchmark rate.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.5rem;border-top:3px solid var(--orange);transition:all 0.2s;" onmouseover="this.style.background='rgba(249,115,22,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:0.6rem;">New Balance</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.7;">Near-sourcing (Made in USA/UK) for shorter lead times. Seasonal pre-build reduces stockouts. Balanced rail/road usage domestically.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.5rem;border-top:3px solid var(--orange);transition:all 0.2s;" onmouseover="this.style.background='rgba(249,115,22,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:0.6rem;">Bata</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.7;">~95% domestic sourcing. Hub-and-spoke with cross-docking. Milk-run routes. SAP ERP+POS integration. Most India-relevant model.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1.5rem;border-top:3px solid var(--orange);transition:all 0.2s;" onmouseover="this.style.background='rgba(249,115,22,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--orange);text-transform:uppercase;margin-bottom:0.6rem;">ASICS</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.7;">Low DIO via stable demand. Tracks air freight % as a KPI. DC localisation in Southern Europe. Sustainable biodiesel for maritime.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end home -->
+
+
+<!-- ██████ PROCUREMENT ██████ -->
+<div id="sec-procurement" class="page-section">
+  <div class="cw">
+    <div class="sec-title">
+      <div class="sec-eye">Module 01</div>
+      <h2>Procurement <span>Strategy</span></h2>
+      <p>8 best-practice pillars derived from Nike, Bata, PUMA, Skechers, ASICS & New Balance — each adapted for GenFast's India-based footwear startup context.</p>
+    </div>
+
+    <!-- PROCUREMENT PILLARS -->
+    <div class="grid-2">
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">01</div><div class="pillar-ico">🏗️</div><div class="pillar-ht">Supplier Segmentation &<br>Centralised Procurement</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — Nike</div>
+          <div class="pillar-text">Adopt Nike-style 3-tier supplier system (Strategic / Preferred / Approved). Use centralised sourcing for negotiation power. Allocate 60% volume to strategic, 30% to preferred, 10% to experimental suppliers.</div>
+          <div class="pillar-why">✓ Maximises negotiation power and ensures quality & delivery control</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">02</div><div class="pillar-ico">🌍</div><div class="pillar-ht">Multi-Country Diversified<br>Sourcing</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — Bata & PUMA</div>
+          <div class="pillar-text">Spread production across India, Vietnam, China & Indonesia to reduce risk. Start with India + Vietnam for cost & reliability. Keep 20% capacity in a secondary country to hedge geopolitical risks.</div>
+          <div class="pillar-why">✓ Reduces geopolitical, supply, and cost risks while ensuring continuity</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">03</div><div class="pillar-ico">🌱</div><div class="pillar-ht">Sustainability & ESG<br>Procurement Standards</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — New Balance</div>
+          <div class="pillar-text">Use recycled EVA/rubber; set ESG audits every quarter; market GenFast as eco-conscious from Day 1. KPIs: % sustainable materials, supplier audit pass rate, waste reduction targets.</div>
+          <div class="pillar-why">✓ Builds long-term brand equity and meets global sustainability expectations</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">04</div><div class="pillar-ico">💻</div><div class="pillar-ht">Digital Supplier &<br>Inventory Visibility</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — Nike & Bata</div>
+          <div class="pillar-text">Implement Zoho / Oracle NetSuite ERP + supplier portal for real-time lead time, quality, and shipment monitoring. Prevents stockouts and improves responsiveness without heavy IT investment.</div>
+          <div class="pillar-why">✓ Improves accuracy, reduces stockouts, increases responsiveness</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">05</div><div class="pillar-ico">💰</div><div class="pillar-ht">Cost-Efficient Manufacturing<br>Partnerships</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — Skechers</div>
+          <div class="pillar-text">Partner with Indian contract manufacturers (Agra, Kanpur, Chennai clusters) for initial batches to maintain margins. Avoid owning manufacturing assets until revenue exceeds ₹50 Cr.</div>
+          <div class="pillar-why">✓ Balances cost efficiency with reliable production for scaling</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">06</div><div class="pillar-ico">⚙️</div><div class="pillar-ht">Quality & Performance<br>Material Focus</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — ASICS</div>
+          <div class="pillar-text">Use high-grip rubber outsoles, cushioned EVA midsoles; build product performance differentiation vs low-end brands. Quality is GenFast's first moat against established players.</div>
+          <div class="pillar-why">✓ Ensures durability, comfort & product differentiation</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">07</div><div class="pillar-ico">🚚</div><div class="pillar-ht">Logistics & Lead-Time<br>Optimisation</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — PUMA</div>
+          <div class="pillar-text">Use 3PL players like Delhivery / Blue Dart; maintain buffer stock at Mumbai DC hub. Target &lt;5 day replenishment for A-SKUs in metro markets. Structured partner-based logistics networks.</div>
+          <div class="pillar-why">✓ Reduces lead time, improves delivery reliability & supports scalability</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-head"><div class="pillar-num">08</div><div class="pillar-ico">👷</div><div class="pillar-ht">Labour & Worker<br>Safety Standards</div></div>
+        <div class="pillar-body">
+          <div class="pillar-brand">Best Practice — PUMA + Nike + New Balance + Bata</div>
+          <div class="pillar-text">Mandatory Supplier Code of Conduct; third-party social audits annually; worker-voice hotline; fair-wage benchmarks aligned with ILO + local labour laws. Zero tolerance for child labour or forced labour.</div>
+          <div class="pillar-why">✓ Protects brand from legal/reputation risks; builds investor trust</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Supplier Volume Allocation</div>
+        <div class="chart-sub">3-Tier segmentation — volume share across supplier tiers</div>
+        <div class="chart-wrap"><canvas id="chart-supplier-pie"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Multi-Country Sourcing Mix</div>
+        <div class="chart-sub">Recommended volume allocation by manufacturing country</div>
+        <div class="chart-wrap"><canvas id="chart-country"></canvas></div>
+      </div>
+    </div>
+
+    <!-- SUPPLIER TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">🏗️ 3-Tier Supplier Segmentation Model (Nike-Inspired)</div>
+      <table>
+        <thead><tr><th>Tier</th><th>Type</th><th>Volume</th><th>Relationship</th><th>Criteria</th><th>GenFast Action</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge b-red">Strategic</span></td><td>Core manufacturing partners</td><td>60%</td><td>Long-term contract (2–3 yr)</td><td>Quality, reliability, capacity, ESG</td><td>2–3 Indian manufacturers; share forecasts quarterly</td></tr>
+          <tr><td><span class="badge b-teal">Preferred</span></td><td>Secondary manufacturers & components</td><td>30%</td><td>Annual agreement with renewal</td><td>Price, lead time, flexibility</td><td>Vietnam/China for international sourcing</td></tr>
+          <tr><td><span class="badge b-grey">Approved</span></td><td>New / experimental / niche</td><td>10%</td><td>Trial / project-based</td><td>Innovation, cost, specialisation</td><td>Sustainable material suppliers; test 1 SKU first</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SOURCING TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">🌍 Multi-Country Sourcing Strategy</div>
+      <table>
+        <thead><tr><th>Country</th><th>Role</th><th>Volume Share</th><th>Key Advantage</th><th>Risk</th><th>GenFast Priority</th></tr></thead>
+        <tbody>
+          <tr><td>🇮🇳 India</td><td>Primary manufacturing + raw materials</td><td>60–70%</td><td>No import duties, short lead times</td><td>Capacity constraints at scale</td><td><span class="badge b-red">Phase 1 — Primary</span></td></tr>
+          <tr><td>🇻🇳 Vietnam</td><td>Secondary manufacturing</td><td>20–25%</td><td>Cost efficiency, FTA benefits</td><td>Geopolitical risk, longer lead time</td><td><span class="badge b-teal">Phase 1 — Secondary</span></td></tr>
+          <tr><td>🇨🇳 China</td><td>Components & specialty materials</td><td>10–15%</td><td>Component ecosystem, scale</td><td>Tariff exposure</td><td><span class="badge b-grey">Phase 2 — Selective</span></td></tr>
+          <tr><td>🇮🇩 Indonesia</td><td>Hedge / diversification</td><td>0–10%</td><td>Cost competitive</td><td>Less established routes</td><td><span class="badge b-grey">Phase 3 — Hedge</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="orange-box">
+      <h3>The GenFast Procurement Principle</h3>
+      <p>Never single-source. Always audit. Digital visibility from Day 1. Domestic-first for cost and speed. ESG is not optional — it's a brand differentiator. Start lean with contract manufacturing, scale with strategic partners once ₹50 Cr revenue milestone is hit.</p>
+    </div>
+  </div>
+</div><!-- end procurement -->
+
+
+<!-- ██████ INVENTORY ██████ -->
+<div id="sec-inventory" class="page-section">
+  <div class="cw">
+    <div class="sec-title">
+      <div class="sec-eye">Module 02</div>
+      <h2>Inventory <span>Strategy</span></h2>
+      <p>Forecast-driven ABC hybrid model — benchmarked against Nike, PUMA, ASICS, New Balance & Skechers with startup-calibrated KPI targets.</p>
+    </div>
+
+    <div class="orange-box" style="margin-bottom:2.5rem;">
+      <h3>Recommended Model: Forecast-Driven ABC Inventory</h3>
+      <p>Nike shows buffers work only at scale. ASICS shows stability reduces inventory. PUMA shows controlled demand-aligned growth works best. GenFast mirrors ASICS + PUMA — <strong>NOT</strong> Nike or Skechers (200+ DIO = cash blockage we cannot afford at startup stage).</p>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="grid-3">
+      <div class="chart-card">
+        <div class="chart-title">ABC SKU Distribution</div>
+        <div class="chart-sub">% of total SKUs by segment</div>
+        <div class="chart-wrap"><canvas id="chart-abc"></canvas></div>
+      </div>
+      <div class="chart-card" style="grid-column:span 2;">
+        <div class="chart-title">Brand Inventory Performance — DIO Comparison</div>
+        <div class="chart-sub">Days Inventory Outstanding across benchmark brands (lower = better for GenFast startup)</div>
+        <div class="chart-wrap-lg"><canvas id="chart-dio"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ABC TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">📦 ABC Inventory Control by SKU Type</div>
+      <table>
+        <thead><tr><th>SKU Segment</th><th>% of SKUs</th><th>Inventory Policy</th><th>Replenishment Logic</th><th>Reasoning</th></tr></thead>
+        <tbody>
+          <tr><td>🔴 A — Top Sellers</td><td>20–30%</td><td><span class="badge b-red">Base Stock Model</span></td><td>Demand + buffer driven</td><td>High revenue contribution, predictable demand — protect service level at all costs</td></tr>
+          <tr><td>🟡 B — Mid Movers</td><td>30–40%</td><td><span class="badge b-teal">Hybrid</span></td><td>Demand-driven replenishment</td><td>Moderate predictability — balance cost and availability with limited safety stock</td></tr>
+          <tr><td>⚪ C — Slow / Fashion</td><td>30–40%</td><td><span class="badge b-grey">Pull / Make-to-Order</span></td><td>Actual sales triggered</td><td>High obsolescence risk — only produce on confirmed demand; avoid dead stock entirely</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <!-- FORECASTING -->
+      <div class="table-wrap" style="margin-bottom:0;">
+        <div class="table-hdr">🔮 Demand Forecasting Horizons</div>
+        <table>
+          <thead><tr><th>Horizon</th><th>Duration</th><th>SKU Type</th><th>Method</th><th>Data Weighting</th></tr></thead>
+          <tbody>
+            <tr><td>Short-term</td><td>1–3 months</td><td>Fashion / New launches</td><td>Recent demand-based</td><td>High weight on latest data</td></tr>
+            <tr><td>Medium-term</td><td>3–6 months</td><td>Seasonal SKUs</td><td>Trend + seasonality</td><td>Balanced</td></tr>
+            <tr><td>Long-term</td><td>6–12 months</td><td>Core A-SKUs</td><td>Moving average / trend</td><td>Stable historical weight</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- SAFETY STOCK -->
+      <div class="table-wrap" style="margin-bottom:0;">
+        <div class="table-hdr">🛡️ Safety Stock Allocation Rules</div>
+        <table>
+          <thead><tr><th>SKU Type</th><th>Margin</th><th>Demand Variability</th><th>Safety Stock</th><th>Strategy</th></tr></thead>
+          <tbody>
+            <tr><td>A SKUs</td><td>High</td><td>Medium–High</td><td><span class="badge b-red">High</span></td><td>Protect service level</td></tr>
+            <tr><td>B SKUs</td><td>Medium</td><td>Medium</td><td><span class="badge b-teal">Limited</span></td><td>Balance cost & availability</td></tr>
+            <tr><td>Fashion SKUs</td><td>High</td><td>Very High</td><td><span class="badge b-partial">Minimal</span></td><td>Avoid obsolescence</td></tr>
+            <tr><td>Expensive Slow Movers</td><td>Low–Med</td><td>Low</td><td><span class="badge b-grey">None</span></td><td>Capital protection</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SEASONAL TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">📅 Seasonal Demand Planning Framework</div>
+      <table>
+        <thead><tr><th>Season / Event</th><th>Demand Impact</th><th>Inventory Action</th><th>SKU Focus</th></tr></thead>
+        <tbody>
+          <tr><td>🪔 Diwali / Christmas</td><td><span class="badge b-red">Very High</span></td><td>Pre-build inventory 6–8 weeks ahead</td><td>A SKUs only</td></tr>
+          <tr><td>💍 Wedding Season</td><td><span class="badge b-partial">High</span></td><td>Limited pre-build with demand signal confirmation</td><td>A + select B SKUs</td></tr>
+          <tr><td>🛒 Sale / End of Season</td><td><span class="badge b-dark">Medium</span></td><td>Controlled inventory; no over-stocking</td><td>B SKUs</td></tr>
+          <tr><td>🆕 Product Launches</td><td><span class="badge b-grey">Uncertain</span></td><td>Small initial batches — test and react</td><td>Test / C SKUs</td></tr>
+          <tr><td>📉 Post-Season</td><td><span class="badge b-grey">Low</span></td><td>Aggressive liquidation — clear fast, don't store</td><td>All seasonal SKUs</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- BRAND COPY/AVOID + KPI CHARTS -->
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Inventory Turnover — Brand Benchmark</div>
+        <div class="chart-sub">GenFast target vs benchmark brands (higher = better)</div>
+        <div class="chart-wrap-lg"><canvas id="chart-turnover"></canvas></div>
+      </div>
+      <div>
+        <div class="table-wrap" style="margin-bottom:1.5rem;">
+          <div class="table-hdr">🔎 Brand Copy / Avoid Decisions</div>
+          <table>
+            <thead><tr><th>Brand</th><th>Decision</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td>Nike</td><td><span class="badge b-partial">Partial Copy</span></td><td>High turnover offsets high inventory — but we lack Nike's scale</td></tr>
+              <tr><td>PUMA</td><td><span class="badge b-copy">Copy</span></td><td>Inventory growth ≈ demand growth — disciplined model</td></tr>
+              <tr><td>ASICS</td><td><span class="badge b-copy">Copy</span></td><td>Low volatility → low safety stock — capital efficient</td></tr>
+              <tr><td>New Balance</td><td><span class="badge b-copy">Copy</span></td><td>Seasonal pre-build reduces stockouts</td></tr>
+              <tr><td>Skechers</td><td><span class="badge b-avoid">Avoid</span></td><td>200+ DIO = cash blockage not viable at startup</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap" style="margin-bottom:0;">
+          <div class="table-hdr">🎯 GenFast Startup KPI Targets</div>
+          <table>
+            <thead><tr><th>Metric</th><th>Target</th><th>Benchmark</th></tr></thead>
+            <tbody>
+              <tr><td>Inventory Turnover</td><td><strong>&gt;3.0×</strong></td><td>Between Nike & ASICS</td></tr>
+              <tr><td>DIO</td><td><strong>&lt;120 days</strong></td><td>&lt;&lt; Skechers 200+</td></tr>
+              <tr><td>Forecast Error</td><td><strong>&lt;15%</strong></td><td>ASICS-level</td></tr>
+              <tr><td>A-SKU Stockout</td><td><strong>&lt;5%</strong></td><td>Nike logic</td></tr>
+              <tr><td>Inventory Growth</td><td><strong>≤ Demand Growth</strong></td><td>PUMA principle</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PLAYBOOK BAND -->
+  <div class="dark-band" style="margin-top:2rem;">
+    <div class="cw">
+      <div class="sec-title" style="padding-top:0;">
+        <div class="sec-eye" style="color:var(--orange2);">Final Decisions</div>
+        <h2 style="color:white;">GenFast Startup Inventory <span>Playbook</span></h2>
+      </div>
+      <div class="grid-3">
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:1.25rem;border-left:3px solid var(--orange);"><div style="font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:6px;">Inventory Model</div><div style="color:white;font-weight:600;">Hybrid — Base Stock + Demand Pull</div></div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:1.25rem;border-left:3px solid var(--orange);"><div style="font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:6px;">Forecasting</div><div style="color:white;font-weight:600;">Multi-Horizon, SKU-Based</div></div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:1.25rem;border-left:3px solid var(--orange);"><div style="font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:6px;">Seasonal Build</div><div style="color:white;font-weight:600;">A-SKUs Only</div></div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:1.25rem;border-left:3px solid var(--orange);"><div style="font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:6px;">Safety Stock</div><div style="color:white;font-weight:600;">Margin + Service Level Driven</div></div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:1.25rem;border-left:3px solid var(--orange);"><div style="font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:6px;">Post-Season Policy</div><div style="color:white;font-weight:600;">Clear Fast — Don't Store</div></div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:1.25rem;border-left:3px solid var(--orange);"><div style="font-size:0.65rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:6px;">C-SKU Policy</div><div style="color:white;font-weight:600;">Make-to-Order Only</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end inventory -->
+
+
+<!-- ██████ TRANSPORT ██████ -->
+<div id="sec-transport" class="page-section">
+  <div class="cw">
+    <div class="sec-title">
+      <div class="sec-eye">Module 03</div>
+      <h2>Transportation <span>Strategy</span></h2>
+      <p>Multi-modal logistics strategy benchmarked against all six brands — with pricing, documents, routes and the complete supply chain flow.</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid-4" style="margin-bottom:2rem;">
+      <div class="kpi-card"><span class="kpi-icon">🚢</span><div class="kpi-val">80%</div><div class="kpi-lbl">Sea Freight Inbound (Avg)</div><div class="kpi-sub">Across all 6 brands</div></div>
+      <div class="kpi-card"><span class="kpi-icon">🚛</span><div class="kpi-val">80%</div><div class="kpi-lbl">Road Outbound</div><div class="kpi-sub">Retail + e-commerce</div></div>
+      <div class="kpi-card"><span class="kpi-icon">✈️</span><div class="kpi-val">&lt;5%</div><div class="kpi-lbl">Air Freight Cap</div><div class="kpi-sub">GenFast policy</div></div>
+      <div class="kpi-card"><span class="kpi-icon">📊</span><div class="kpi-val">64×</div><div class="kpi-lbl">Air vs Sea Cost</div><div class="kpi-sub">US$5,700 vs US$88/tonne</div></div>
+    </div>
+
+    <!-- FLOW DIAGRAM -->
+    <div class="table-wrap" style="padding:1.5rem;">
+      <div class="table-hdr" style="border-radius:8px 8px 0 0;margin:-1.5rem -1.5rem 1.5rem -1.5rem;">🔗 GenFast Supply Chain Flow</div>
+      <div class="flow">
+        <div class="flow-node active"><span class="flow-node-ico">🏭</span><div class="flow-node-lbl">Suppliers</div><div class="flow-node-sub">India / Vietnam</div></div>
+        <div class="flow-arr"><div class="flow-arr-line">→</div><div class="flow-arr-lbl">Rail / Road</div></div>
+        <div class="flow-node"><span class="flow-node-ico">⚙️</span><div class="flow-node-lbl">Factory</div><div class="flow-node-sub">Agra / Chennai</div></div>
+        <div class="flow-arr"><div class="flow-arr-line">→</div><div class="flow-arr-lbl">Road / Rail</div></div>
+        <div class="flow-node" style="border-color:var(--orange);"><span class="flow-node-ico">📦</span><div class="flow-node-lbl">Central DC</div><div class="flow-node-sub">Mumbai (JNPT)</div></div>
+        <div class="flow-arr"><div class="flow-arr-line">→</div><div class="flow-arr-lbl">3PL Road</div></div>
+        <div class="flow-node"><span class="flow-node-ico">🏪</span><div class="flow-node-lbl">Retail Stores</div><div class="flow-node-sub">Multi-brand</div></div>
+        <div class="flow-arr"><div class="flow-arr-line">→</div><div class="flow-arr-lbl">Courier</div></div>
+        <div class="flow-node"><span class="flow-node-ico">📱</span><div class="flow-node-lbl">D2C / E-comm</div><div class="flow-node-sub">End Consumer</div></div>
+      </div>
+    </div>
+
+    <!-- INBOUND CHARTS -->
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">GenFast Inbound Modal Split</div>
+        <div class="chart-sub">Recommended transport mode allocation — domestic-first India model</div>
+        <div class="chart-wrap"><canvas id="chart-inbound-pie"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Transport Cost Comparison</div>
+        <div class="chart-sub">Relative cost per tonne across all modes (sea = baseline 1×)</div>
+        <div class="chart-wrap"><canvas id="chart-cost-comp"></canvas></div>
+      </div>
+    </div>
+
+    <!-- INBOUND TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">📥 Inbound Parameters</div>
+      <table>
+        <thead><tr><th>Parameter</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td>Cargo Type</td><td>Leather, rubber soles, shoe uppers, midsoles, packaging materials, finished goods for redistribution</td></tr>
+          <tr><td>Container Type</td><td>40-ft FCL (≈24–27 tonnes per container payload)</td></tr>
+          <tr><td>International Port (Arrival)</td><td>Nhava Sheva (JNPT), Mumbai — India's largest container port</td></tr>
+          <tr><td>International Origin Ports</td><td>Ho Chi Minh City, Hai Phong, Shanghai, Ningbo</td></tr>
+          <tr><td>Domestic Origins</td><td>Agra, Kanpur, Chennai footwear manufacturing clusters</td></tr>
+          <tr><td>Sea Lead Time (Asia → India)</td><td>18–25 days transit</td></tr>
+          <tr><td>Air Lead Time (Asia → India)</td><td>3–5 days transit (emergency only)</td></tr>
+          <tr><td>Cost Reduction Strategy</td><td>FOB Incoterms; FCL over LCL; long-term ocean contracts; demand forecasting to eliminate emergency air</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROUTE CARDS -->
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--navy);margin-bottom:1rem;">🗺️ Inbound Route Cards</div>
+    <div class="route-grid">
+      <div class="route-card"><div class="route-ico">🚢</div><div><div class="rname">Ocean FCL — Primary Intl</div><div class="rdetail">Shanghai/HCM City → JNPT Mumbai · 18–25 days</div><div class="rcost">US$1,800–2,400 / container</div></div></div>
+      <div class="route-card"><div class="route-ico dark">🚂</div><div><div class="rname">Rail — Domestic Bulk</div><div class="rdetail">Factory (Agra/Kanpur) → DC (Mumbai) · Long-haul</div><div class="rcost">₹1.7–2.1 / tonne-km</div></div></div>
+      <div class="route-card"><div class="route-ico dark">🚛</div><div><div class="rname">Road — Domestic Short Haul</div><div class="rdetail">Factory → Nearby DC · &lt;500 km radius</div><div class="rcost">₹7–9 / tonne-km</div></div></div>
+      <div class="route-card"><div class="route-ico red">✈️</div><div><div class="rname">Air — Emergency Only</div><div class="rdetail">Asia → India · Critical SKU / samples</div><div class="rcost warn">US$3.5–6 / kg ⚠️</div></div></div>
+      <div class="route-card"><div class="route-ico">⚓</div><div><div class="rname">Inland Waterways</div><div class="rdetail">NW-1 (Ganga) · Phase 3 future play</div><div class="rcost">₹2.0–2.4 / tonne-km</div></div></div>
+      <div class="route-card"><div class="route-ico dark">📦</div><div><div class="rname">LCL Ocean — Pre-Scale</div><div class="rdetail">Volume &lt;1 FCL · Via freight forwarder</div><div class="rcost warn">30–40% premium vs FCL</div></div></div>
+    </div>
+
+    <!-- PRICING TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">💰 Comprehensive Pricing Benchmark — All Modes</div>
+      <table>
+        <thead><tr><th>Mode</th><th>Route</th><th>Rate</th><th>Per-Tonne Equiv.</th><th>Sensitivity</th><th>Source</th><th>GenFast Strategy</th></tr></thead>
+        <tbody>
+          <tr><td>🚢 Ocean FCL</td><td>Asia (Shanghai/HCM) → Mumbai</td><td>US$1,800–2,400/container</td><td>~US$75–90/tonne</td><td><span class="badge b-copy">Low</span></td><td>Drewry WCI</td><td>Default for international; FCL contracts</td></tr>
+          <tr><td>✈️ Air Freight</td><td>Asia → India (urgent/samples)</td><td>US$3.5–6/kg</td><td>~US$3,500–6,000/tonne</td><td><span class="badge b-avoid">Very High</span></td><td>Freightos FAX</td><td>Emergency only; margin &gt;40% gate</td></tr>
+          <tr><td>🚂 Rail (India)</td><td>Factory → DC (Agra → Mumbai)</td><td>₹1.7–2.1/tonne-km</td><td>~₹2,040–2,520/tonne (1200km)</td><td><span class="badge b-teal">Medium</span></td><td>DPIIT / NCAER</td><td>Primary domestic long-haul mode</td></tr>
+          <tr><td>🚛 Road (Inter-city)</td><td>DC → Retail Stores (500 km)</td><td>₹9–11/tonne-km</td><td>~₹4,500–5,500/tonne (500km)</td><td><span class="badge b-partial">High</span></td><td>NCAER / Bata</td><td>Milk-run routes; &gt;85% truck fill</td></tr>
+          <tr><td>🚛 Road (Short-Haul)</td><td>Factory → Nearby DC (&lt;200km)</td><td>₹7–9/tonne-km</td><td>~₹1,400–1,800/tonne (200km)</td><td><span class="badge b-teal">Medium</span></td><td>Bata benchmarks</td><td>High-frequency factory dispatch</td></tr>
+          <tr><td>🌊 Inland Waterway</td><td>NW-1 (Ganga corridor)</td><td>₹2.0–2.4/tonne-km</td><td>Same</td><td><span class="badge b-copy">Low</span></td><td>DPIIT</td><td>Phase 3 — monitor NW-1 development</td></tr>
+          <tr><td>🔄 Reverse Logistics</td><td>Retail Stores → DC (returns)</td><td>₹8–10/tonne-km</td><td>Similar to road</td><td><span class="badge b-teal">Medium</span></td><td>Bata / Industry</td><td>Include in 3PL SLA from Day 1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- OUTBOUND TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">📤 Outbound Transport — Mode by Mode</div>
+      <table>
+        <thead><tr><th>Mode</th><th>Route / Use Case</th><th>Benchmark Cost</th><th>GenFast Policy</th><th>Lead Time</th><th>Share</th></tr></thead>
+        <tbody>
+          <tr><td>🚛 Road (3PL Truck)</td><td>DC Mumbai → Retail Stores, All India</td><td>₹9–11/tonne-km</td><td><span class="badge b-red">Primary Mode</span></td><td>1–5 days</td><td>80%</td></tr>
+          <tr><td>📦 Courier / Parcel</td><td>DC → D2C E-commerce customers</td><td>₹40–80/shipment</td><td><span class="badge b-red">Primary — E-comm</span></td><td>1–4 days</td><td>Incl. in 80%</td></tr>
+          <tr><td>🚂 Rail (Bulk)</td><td>DC → Regional Hub cities</td><td>₹1.7–2.1/tonne-km</td><td><span class="badge b-teal">Secondary</span></td><td>3–7 days</td><td>10%</td></tr>
+          <tr><td>🚢 Ocean Freight</td><td>India → Middle East / SE Asia</td><td>US$1,500–2,400/container</td><td><span class="badge b-grey">Phase 2 Export</span></td><td>7–18 days</td><td>5%</td></tr>
+          <tr class="hl-row"><td>✈️ Air Freight</td><td>Emergency stockout / key launch only</td><td>US$5–6/kg ⚠️</td><td><span class="badge b-avoid">Last Resort</span></td><td>1–2 days</td><td>≤5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- DOCUMENTS -->
+    <div class="grid-3">
+      <div class="table-wrap" style="margin-bottom:0;">
+        <div class="table-hdr">📋 International Inbound Docs</div>
+        <table>
+          <thead><tr><th>Document</th><th>Purpose</th><th>Issued By</th></tr></thead>
+          <tbody>
+            <tr><td>Commercial Invoice</td><td>Customs valuation & duties</td><td>Overseas Supplier</td></tr>
+            <tr><td>Packing List</td><td>Cargo details for customs</td><td>Exporter / Shipper</td></tr>
+            <tr><td>Bill of Lading (B/L)</td><td>Sea: contract of carriage</td><td>Shipping Line</td></tr>
+            <tr><td>Air Waybill (AWB)</td><td>Air: contract of carriage</td><td>Airline / Forwarder</td></tr>
+            <tr><td>Certificate of Origin</td><td>FTA & tariff eligibility</td><td>Chamber of Commerce</td></tr>
+            <tr><td>Bill of Entry</td><td>India customs clearance</td><td>Customs Broker / ICEGATE</td></tr>
+            <tr><td>Insurance Certificate</td><td>Cargo coverage</td><td>Insurer / Forwarder</td></tr>
+            <tr><td>SLI</td><td>Routing instructions</td><td>GenFast internally</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap" style="margin-bottom:0;">
+        <div class="table-hdr">🏭 Domestic Inbound Docs</div>
+        <table>
+          <thead><tr><th>Document</th><th>Purpose</th><th>Filed Via</th></tr></thead>
+          <tbody>
+            <tr><td>E-Way Bill</td><td>GST movement (goods &gt;₹50k)</td><td>ewaybillgst.gov.in</td></tr>
+            <tr><td>Lorry Receipt (LR)</td><td>Proof of road dispatch</td><td>Transporter</td></tr>
+            <tr><td>Rail Consignment Note</td><td>Proof of rail dispatch</td><td>Indian Railways</td></tr>
+            <tr><td>Delivery Challan</td><td>Inter-branch stock transfer</td><td>GenFast ERP</td></tr>
+            <tr><td>GST Tax Invoice</td><td>All taxable supply movements</td><td>Supplier / GSTN</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap" style="margin-bottom:0;">
+        <div class="table-hdr">📤 Outbound Docs</div>
+        <table>
+          <thead><tr><th>Document</th><th>Purpose</th><th>Filed Via</th></tr></thead>
+          <tbody>
+            <tr><td>Export Invoice</td><td>GST-compliant B2B invoice</td><td>GSTN / ICEGATE</td></tr>
+            <tr><td>Proof of Delivery</td><td>Signed receipt; payment</td><td>3PL tracking system</td></tr>
+            <tr><td>Shipping Bill</td><td>Export customs clearance</td><td>ICEGATE portal</td></tr>
+            <tr><td>E-Way Bill</td><td>Interstate road movement</td><td>ewaybillgst.gov.in</td></tr>
+            <tr><td>BIS Certificate</td><td>India footwear compliance</td><td>Bureau of Indian Standards</td></tr>
+            <tr><td>REACH Certificate</td><td>EU compliance (if exporting)</td><td>SGS / Intertek lab</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CROSS-BRAND TABLE -->
+    <div class="table-wrap">
+      <div class="table-hdr">📊 Cross-Brand Transport Comparison</div>
+      <table>
+        <thead><tr><th>Brand</th><th>Sea Inbound</th><th>Air Inbound</th><th>Road Outbound</th><th>Rail</th><th>Key Differentiator</th></tr></thead>
+        <tbody>
+          <tr><td>Nike</td><td>~70%</td><td>~20%</td><td>~80%</td><td>~5%</td><td>AI forecasting; Sole Train; Belgium waterway</td></tr>
+          <tr><td>PUMA</td><td>~85%</td><td>&lt;0.5%</td><td>~35%</td><td>~4%</td><td>Strictest air policy; electric trucks</td></tr>
+          <tr><td>Skechers</td><td>~80%</td><td>~10%</td><td>~30%</td><td>~3%</td><td>Mumbai DC near JNPT; CJ Logistics 3PL</td></tr>
+          <tr><td>New Balance</td><td>70%</td><td>10%</td><td>30%</td><td>10%</td><td>Near-sourcing; seasonal pre-build</td></tr>
+          <tr><td>Bata</td><td>8%</td><td>2%</td><td>40%</td><td>35%</td><td>95% local sourcing; hub-and-spoke</td></tr>
+          <tr><td>ASICS</td><td>~75%</td><td>~7%</td><td>~85–90%</td><td>~8%</td><td>DC localisation; sustainable sea freight</td></tr>
+          <tr class="hl-row"><td>🟠 GenFast (Target)</td><td>15% (intl)</td><td>≤5%</td><td>80%</td><td>30% (domestic)</td><td>Bata domestic-first + sea for intl scale</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- LINE CHART - transport trend -->
+    <div class="chart-card" style="margin-bottom:3rem;">
+      <div class="chart-title">Transport Cost Evolution — GenFast Projection (Year 1–5)</div>
+      <div class="chart-sub">Estimated logistics cost as % of FOB value across growth phases — target corridor: 12–15%</div>
+      <div class="chart-wrap-lg"><canvas id="chart-line-transport"></canvas></div>
+    </div>
+
+  </div>
+</div><!-- end transport -->
+
+
+<!-- ██████ SOURCES ██████ -->
+<div id="sec-sources" class="page-section">
+  <div class="cw">
+    <div class="sec-title">
+      <div class="sec-eye">Bibliography</div>
+      <h2>Data <span>Sources</span></h2>
+      <p>All benchmark data, pricing and strategic insights are derived from the following authoritative sources.</p>
+    </div>
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="table-hdr" style="border-radius:8px 8px 0 0;margin:-1.75rem -1.75rem 1.25rem -1.75rem;">📊 Freight Rate & Cost Data</div>
+        <div class="source-item"><div class="src-num">01</div><div><div class="src-title">Drewry World Container Index (WCI)</div><div class="src-org">Drewry Maritime Research — Ocean FCL benchmark rates</div><div class="src-link">drewry.co.uk/supply-chain-advisors/supply-chain-expertise/world-container-index</div></div></div>
+        <div class="source-item"><div class="src-num">02</div><div><div class="src-title">Freightos Air Freight Index (FAX / FBX)</div><div class="src-org">Freightos Baltic Index — Air cargo rates per kg</div><div class="src-link">fbx.freightos.com</div></div></div>
+        <div class="source-item"><div class="src-num">03</div><div><div class="src-title">Logistics Cost in India — Report</div><div class="src-org">DPIIT & NCAER — Rail, road and waterway cost per tonne-km</div><div class="src-link">dpiit.gov.in/publications/reports</div></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="table-hdr" style="border-radius:8px 8px 0 0;margin:-1.75rem -1.75rem 1.25rem -1.75rem;">👟 Brand Reports</div>
+        <div class="source-item"><div class="src-num">04</div><div><div class="src-title">Skechers USA Inc. — Annual & Impact Reports</div><div class="src-org">Distribution centers, modal splits, India DC</div><div class="src-link">about.skechers.com/social-responsibility</div></div></div>
+        <div class="source-item"><div class="src-num">05</div><div><div class="src-title">PUMA Annual Report 2024</div><div class="src-org">Transport strategy, modal policy, sustainability</div><div class="src-link">annual-report-2024.about.puma.com</div></div></div>
+        <div class="source-item"><div class="src-num">06</div><div><div class="src-title">Nike Supply Chain — Just Style, Supply Chain Dive, Statista</div><div class="src-org">Modal splits, Sole Train, AI forecasting (2022–2023)</div><div class="src-link">justtyle.com · supplychaindive.com · statista.com</div></div></div>
+        <div class="source-item"><div class="src-num">07</div><div><div class="src-title">New Balance Revenue & Logistics</div><div class="src-org">Accio.com; Wikipedia — Revenue benchmarks, logistics cost 11% share</div><div class="src-link">accio.com — New Balance Revenue Performance</div></div></div>
+        <div class="source-item"><div class="src-num">08</div><div><div class="src-title">Bata India — SAP SCM & NCAER</div><div class="src-org">Hub-and-spoke, cross-docking, transport benchmarks</div><div class="src-link">Bata public disclosures; NCAER industry reports</div></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="table-hdr" style="border-radius:8px 8px 0 0;margin:-1.75rem -1.75rem 1.25rem -1.75rem;">⚖️ Regulatory & Compliance</div>
+        <div class="source-item"><div class="src-num">09</div><div><div class="src-title">India Customs — ICEGATE Portal</div><div class="src-org">CBIC, Government of India</div><div class="src-link">icegate.gov.in</div></div></div>
+        <div class="source-item"><div class="src-num">10</div><div><div class="src-title">GST E-Way Bill System</div><div class="src-org">NIC / GSTN, Government of India</div><div class="src-link">ewaybillgst.gov.in</div></div></div>
+        <div class="source-item"><div class="src-num">11</div><div><div class="src-title">Bureau of Indian Standards — Footwear</div><div class="src-org">BIS, Ministry of Consumer Affairs</div><div class="src-link">bis.gov.in</div></div></div>
+        <div class="source-item"><div class="src-num">12</div><div><div class="src-title">IATA Dangerous Goods Regulations</div><div class="src-org">International Air Transport Association</div><div class="src-link">iata.org/en/programs/cargo/dgr</div></div></div>
+        <div class="source-item"><div class="src-num">13</div><div><div class="src-title">Zauba Technologies — Trade Data</div><div class="src-org">Import shipment volumes for Skechers India</div><div class="src-link">zauba.com/skechers-import-data</div></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="table-hdr" style="border-radius:8px 8px 0 0;margin:-1.75rem -1.75rem 1.25rem -1.75rem;">📦 Procurement & Inventory</div>
+        <div class="source-item"><div class="src-num">14</div><div><div class="src-title">Nike Supplier Code of Conduct</div><div class="src-org">Nike Inc. — Supplier tiers, ESG standards, audit frameworks</div><div class="src-link">nike.com/sustainability</div></div></div>
+        <div class="source-item"><div class="src-num">15</div><div><div class="src-title">New Balance Sustainability Report</div><div class="src-org">New Balance Athletics Inc. — ESG KPIs, sustainable materials</div><div class="src-link">newbalance.com/sustainability</div></div></div>
+        <div class="source-item"><div class="src-num">16</div><div><div class="src-title">ASICS Annual Report & Supply Chain</div><div class="src-org">ASICS Corporation — Inventory model, DIO, DC localisation</div><div class="src-link">asics.com/en/about/sustainability</div></div></div>
+        <div class="source-item"><div class="src-num">17</div><div><div class="src-title">CJ Logistics — Skechers 3PL Partnership</div><div class="src-org">CJ Global Logistics</div><div class="src-link">cjgloballogistics.net/en/newsroom</div></div></div>
+        <div class="source-item"><div class="src-num">18</div><div><div class="src-title">Trade.gov Export Documentation Guide</div><div class="src-org">U.S. International Trade Administration</div><div class="src-link">trade.gov/export-documentation</div></div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end sources -->
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Gen<span>Fast</span></div>
+      <div class="footer-desc">A complete Supply Chain & Logistics strategy for India's newest footwear startup — benchmarked against 6 global brands across 3 strategy modules.</div>
+    </div>
+    <div>
+      <div class="footer-h">Modules</div>
+      <div class="footer-link" onclick="showSec('procurement')">🤝 Procurement Strategy</div>
+      <div class="footer-link" onclick="showSec('inventory')">📦 Inventory Strategy</div>
+      <div class="footer-link" onclick="showSec('transport')">🚛 Transportation Strategy</div>
+      <div class="footer-link" onclick="showSec('sources')">📚 Sources & References</div>
+    </div>
+    <div>
+      <div class="footer-h">Brands Analysed</div>
+      <div class="footer-link">Nike · PUMA</div>
+      <div class="footer-link">Skechers · New Balance</div>
+      <div class="footer-link">Bata · ASICS</div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">LSCM Group 9 · Final Submission · GenFast Footwear Strategy</div>
+    <div class="footer-tags"><span class="ftag">Procurement</span><span class="ftag">Inventory</span><span class="ftag">Transport</span><span class="ftag">LSCM</span></div>
+  </div>
+</footer>
+
+<script>
+/* ── NAVIGATION ── */
+const SK = 'genfast_v2_sec';
+
+function showSec(id) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#main-nav a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.sec-tab').forEach(t => t.classList.remove('active'));
+
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+
+  const tab = document.getElementById('tab-' + id);
+  if (tab) tab.classList.add('active');
+
+  document.querySelectorAll('#main-nav a').forEach(a => {
+    if (a.getAttribute('onclick') && a.getAttribute('onclick').includes(`'${id}'`)) a.classList.add('active');
+  });
+
+  localStorage.setItem(SK, id);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  setTimeout(() => {
+    animateBars();
+    initChartsForSection(id);
+  }, 150);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(SK) || 'home';
+  showSec(saved);
+});
+
+/* ── BAR ANIMATION ── */
+function animateBars() {
+  const active = document.querySelector('.page-section.active');
+  if (!active) return;
+  active.querySelectorAll('.bar-fill').forEach((el, i) => {
+    el.classList.remove('go');
+    setTimeout(() => el.classList.add('go'), i * 100);
+  });
+}
+
+/* ── CHARTS ── */
+const chartInstances = {};
+function destroyChart(id) {
+  if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+const ORANGE = '#f97316';
+const NAVY = '#0d2035';
+const TEAL = '#0e3d52';
+const TEAL2 = '#0a4a5e';
+const LIGHT = '#e8f0f5';
+const orangeAlpha = (a) => `rgba(249,115,22,${a})`;
+const navyAlpha = (a) => `rgba(13,32,53,${a})`;
+
+function initChartsForSection(sec) {
+  if (sec === 'home') {
+    // Modal Split - Grouped Bar
+    destroyChart('chart-modal');
+    const ctx = document.getElementById('chart-modal');
+    if (ctx) chartInstances['chart-modal'] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Road/Courier', 'Sea Freight', 'Rail', 'Air Freight'],
+        datasets: [
+          { label: 'Inbound', data: [50, 15, 30, 5], backgroundColor: ORANGE, borderRadius: 4 },
+          { label: 'Outbound', data: [80, 5, 10, 5], backgroundColor: TEAL, borderRadius: 4 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: NAVY, font: { family: 'Poppins', size: 11 } } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: '#6b7a90', font: { size: 10 } }, grid: { color: '#e8f0f5' } }, x: { ticks: { color: '#6b7a90', font: { size: 10 } }, grid: { display: false } } } }
+    });
+
+    // Brand Sea Share - Horizontal Bar
+    destroyChart('chart-brands-sea');
+    const ctx2 = document.getElementById('chart-brands-sea');
+    if (ctx2) chartInstances['chart-brands-sea'] = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['PUMA', 'Skechers', 'ASICS', 'Nike', 'New Balance', 'Bata', 'GenFast Target'],
+        datasets: [{ data: [85, 80, 75, 70, 70, 8, 15], backgroundColor: ['#0e3d52','#0e3d52','#0e3d52','#0e3d52','#0e3d52','#0e3d52',ORANGE], borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: '#6b7a90', font: { size: 10 } }, grid: { color: '#e8f0f5' } }, y: { ticks: { color: '#6b7a90', font: { size: 10 } }, grid: { display: false } } } }
+    });
+  }
+
+  if (sec === 'procurement') {
+    // Supplier Pie
+    destroyChart('chart-supplier-pie');
+    const ctx3 = document.getElementById('chart-supplier-pie');
+    if (ctx3) chartInstances['chart-supplier-pie'] = new Chart(ctx3, {
+      type: 'doughnut',
+      data: {
+        labels: ['Strategic (60%)', 'Preferred (30%)', 'Approved (10%)'],
+        datasets: [{ data: [60, 30, 10], backgroundColor: [ORANGE, TEAL, '#e8f0f5'], borderWidth: 0, hoverOffset: 10 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { color: NAVY, font: { family: 'Poppins', size: 11 }, padding: 16 } } } }
+    });
+
+    // Country Bar
+    destroyChart('chart-country');
+    const ctx4 = document.getElementById('chart-country');
+    if (ctx4) chartInstances['chart-country'] = new Chart(ctx4, {
+      type: 'bar',
+      data: {
+        labels: ['🇮🇳 India', '🇻🇳 Vietnam', '🇨🇳 China', '🇮🇩 Indonesia'],
+        datasets: [{ label: 'Volume %', data: [65, 22, 10, 3], backgroundColor: [ORANGE, TEAL, '#6b7a90', LIGHT], borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: '#6b7a90', font: { size: 10 } }, grid: { color: '#e8f0f5' } }, x: { ticks: { color: '#6b7a90', font: { size: 11 } }, grid: { display: false } } } }
+    });
+  }
+
+  if (sec === 'inventory') {
+    // ABC Pie
+    destroyChart('chart-abc');
+    const ctx5 = document.getElementById('chart-abc');
+    if (ctx5) chartInstances['chart-abc'] = new Chart(ctx5, {
+      type: 'pie',
+      data: {
+        labels: ['A — Top Sellers (25%)', 'B — Mid Movers (35%)', 'C — Slow/Fashion (40%)'],
+        datasets: [{ data: [25, 35, 40], backgroundColor: [ORANGE, TEAL, '#c0cfe0'], borderWidth: 2, borderColor: 'white', hoverOffset: 10 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: NAVY, font: { family: 'Poppins', size: 10 }, padding: 12 } } } }
+    });
+
+    // DIO Bar
+    destroyChart('chart-dio');
+    const ctx6 = document.getElementById('chart-dio');
+    if (ctx6) chartInstances['chart-dio'] = new Chart(ctx6, {
+      type: 'bar',
+      data: {
+        labels: ['Skechers', 'Nike', 'New Balance', 'PUMA', 'ASICS', 'GenFast Target'],
+        datasets: [{ label: 'Days Inventory Outstanding (DIO)', data: [210, 150, 135, 110, 90, 110], backgroundColor: ['#c0cfe0','#c0cfe0','#c0cfe0','#c0cfe0','#c0cfe0', ORANGE], borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' DIO: ' + ctx.raw + ' days' } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v + 'd', color: '#6b7a90', font: { size: 10 } }, grid: { color: '#e8f0f5' } }, x: { ticks: { color: '#6b7a90', font: { size: 10 } }, grid: { display: false } } } }
+    });
+
+    // Turnover Bar
+    destroyChart('chart-turnover');
+    const ctx7 = document.getElementById('chart-turnover');
+    if (ctx7) chartInstances['chart-turnover'] = new Chart(ctx7, {
+      type: 'bar',
+      data: {
+        labels: ['Skechers', 'Bata', 'New Balance', 'PUMA', 'GenFast\nTarget', 'ASICS', 'Nike'],
+        datasets: [{ label: 'Inventory Turnover (×)', data: [1.7, 2.2, 2.8, 3.2, 3.2, 3.8, 4.5], backgroundColor: ['#c0cfe0','#c0cfe0','#c0cfe0','#c0cfe0', ORANGE,'#c0cfe0','#c0cfe0'], borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' Turnover: ' + ctx.raw + '×' } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v + '×', color: '#6b7a90', font: { size: 10 } }, grid: { color: '#e8f0f5' } }, x: { ticks: { color: '#6b7a90', font: { size: 9 } }, grid: { display: false } } } }
+    });
+  }
+
+  if (sec === 'transport') {
+    // Inbound Pie
+    destroyChart('chart-inbound-pie');
+    const ctx8 = document.getElementById('chart-inbound-pie');
+    if (ctx8) chartInstances['chart-inbound-pie'] = new Chart(ctx8, {
+      type: 'doughnut',
+      data: {
+        labels: ['Road (Domestic) 50%', 'Rail (Domestic) 30%', 'Sea (Intl) 15%', 'Air (Emergency) 5%'],
+        datasets: [{ data: [50, 30, 15, 5], backgroundColor: [ORANGE, TEAL, '#0a6080', '#dc2626'], borderWidth: 0, hoverOffset: 10 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { color: NAVY, font: { family: 'Poppins', size: 10 }, padding: 10 } } } }
+    });
+
+    // Cost Comparison Bar
+    destroyChart('chart-cost-comp');
+    const ctx9 = document.getElementById('chart-cost-comp');
+    if (ctx9) chartInstances['chart-cost-comp'] = new Chart(ctx9, {
+      type: 'bar',
+      data: {
+        labels: ['Sea (Intl)', 'Rail (India)', 'Waterway', 'Road (India)', 'Air (Intl)'],
+        datasets: [{ label: 'Relative cost (1 = sea baseline)', data: [1, 2.2, 2.7, 12, 64], backgroundColor: [TEAL, '#2a9d8f', '#52b788', ORANGE, '#dc2626'], borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + '× sea freight' } } }, scales: { y: { beginAtZero: true, type: 'logarithmic', ticks: { color: '#6b7a90', font: { size: 10 } }, grid: { color: '#e8f0f5' } }, x: { ticks: { color: '#6b7a90', font: { size: 10 } }, grid: { display: false } } } }
+    });
+
+    // Line Chart - 5-year projection
+    destroyChart('chart-line-transport');
+    const ctx10 = document.getElementById('chart-line-transport');
+    if (ctx10) chartInstances['chart-line-transport'] = new Chart(ctx10, {
+      type: 'line',
+      data: {
+        labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+        datasets: [
+          { label: 'Logistics Cost % of FOB', data: [18, 15.5, 13.8, 12.5, 11.8], borderColor: ORANGE, backgroundColor: orangeAlpha(0.1), fill: true, tension: 0.4, pointBackgroundColor: ORANGE, pointRadius: 6, borderWidth: 2.5 },
+          { label: 'Target Ceiling (15%)', data: [15, 15, 15, 15, 15], borderColor: '#dc2626', borderDash: [8, 4], backgroundColor: 'transparent', fill: false, tension: 0, pointRadius: 0, borderWidth: 1.5 },
+          { label: 'Target Floor (12%)', data: [12, 12, 12, 12, 12], borderColor: '#2a9d8f', borderDash: [8, 4], backgroundColor: 'transparent', fill: false, tension: 0, pointRadius: 0, borderWidth: 1.5 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: NAVY, font: { family: 'Poppins', size: 11 }, padding: 16 } }, tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.raw + '%' } } }, scales: { y: { beginAtZero: false, min: 8, max: 22, ticks: { callback: v => v + '%', color: '#6b7a90', font: { size: 10 } }, grid: { color: '#e8f0f5' } }, x: { ticks: { color: '#6b7a90', font: { size: 11 } }, grid: { display: false } } } }
+    });
+  }
+}
+</script>
+</body>
+</html>
